@@ -3,6 +3,7 @@ Select *
 from layoffs;
 #remove duplicates, standardize data, check for null or blank values and remove any columns
 
+#creating a copy to avoid altering the raw data
 CREATE TABLE layoff_staging
 like layoffs;
 
@@ -13,6 +14,7 @@ insert layoff_staging
 select *
 from layoffs;
 
+#removing the duplicates
 select *,
 row_number() over(partition by 
 company, industry, total_laid_off, percentage_laid_off,`date`) as row_num
@@ -83,7 +85,7 @@ SET SQL_SAFE_UPDATES = 1;
 select *
 from layoffs_staging2;
 
-#standardizing
+#standardizing the data
 
 select company, trim(company)
 from layoffs_staging2;
@@ -139,6 +141,8 @@ WHERE location LIKE 'Florian%'
    
    alter table layoffs_staging2
    modify column `date` date;
+
+#checking for null and blank values
    
    select *
    from layoffs_staging2
@@ -173,6 +177,8 @@ WHERE location LIKE 'Florian%'
    set t1.industry = t2.industry
    where t1.industry is null 
    and t2.industry is not null;
+
+#deleting unused columns
    
    select *
    from layoffs_staging2
